@@ -1,0 +1,18 @@
+PUT /ecommerce_subcategory
+{
+  "mappings":{
+    "properties": {
+      "subcategory":{
+        "type":"text"
+      },
+      "category":{
+        "type":"nested",
+        "properties": {
+          "category":{
+            "type":"text"
+          }
+        }
+      }
+    }
+  }
+}

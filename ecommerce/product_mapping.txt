@@ -1,0 +1,115 @@
+PUT /ecommerce_products
+{
+  "mappings": {
+    "properties": {
+      "name": {
+        "type": "text",
+        "fields":{
+          "keyword":{
+            "type":"keyword"
+          }
+        }
+      },
+      "category": {
+        "type": "nested",
+        "properties": {
+          "category": {
+            "type": "text"
+          }
+        }
+      },
+      "subcategory": {
+        "type": "nested",
+        "properties": {
+          "subcategory": {
+            "type": "nested",
+            "properties": {
+              "subcategory": {
+                "type": "nested",
+                "properties": {
+                  "subcategory": {
+                    "type": "text"
+                  },
+                  "category": {
+                    "type": "text"
+                  }
+                }
+              },
+              "category": {
+                "type": "text"
+              }
+            }
+          }
+        }
+      },
+      "subcategory_level2": {
+        "type": "nested",
+        "properties": {
+          "subcategory_level2": {
+            "type": "text"
+          },
+          "subcategory": {
+            "type": "nested",
+            "properties": {
+              "subcategory": {
+                "type": "text"
+              },
+              "category": {
+                "type": "nested",
+                "properties": {
+                  "category": {
+                    "type": "text"
+                  }
+                }
+              }
+            }
+          },
+          "category": {
+            "type": "text"
+          }
+        }
+      },
+      "price": {
+        "type": "text"
+      },
+      "seller": {
+        "type": "nested",
+        "properties": {
+          "name": {
+            "type": "nested",
+            "properties": {
+              "username": {
+                "type": "text"
+              },
+              "email": {
+                "type": "text"
+              }
+            }
+          },
+          "product_category":{
+            "type":"text"
+          }
+        }
+      },
+      "description":{
+        "type":"text",
+        "fields":{
+          "keyword":{
+            "type":"keyword"
+          }
+        }
+      },
+      "company":{
+        "type":"nested",
+        "properties": {
+          "name_of_company":{
+            "type":"text"
+          },
+          "quality":{
+            "type":"text"
+          }
+        }
+      }
+    }
+  }
+}

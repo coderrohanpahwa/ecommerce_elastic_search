@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %} {{request.user}} || Cart{% endblock title %}
+{% block body %}
+<div class="container">
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Name of Product </th>
+      <th scope="col">Seller </th>
+      <th scope="col">Quantity</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for i in all_prod %}
+    <tr>
+      <th scope="row">{{forloop.counter}}</th>
+      <td>{{i.name}}</td>
+      <td>{{i.seller.name}}</td>
+      <td><form method="POST" action="{% url 'update_product' %}">{% csrf_token %}
+        <input type="number" value="{{i.quantity}}" name="quantity" style="width:12%;" max="" min="0">
+        <input type="hidden" value="{{i.name.id}}" name="product_id" >
+        <input type="submit" value="Update" class="btn btn-primary btn-sm">
+      </form></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+  <form method="POST" style="text-align:center;" action="{% url 'complete_your_payment' %}">
+    {% csrf_token %}
+      {% for i in all_prod %}
+        <input type="hidden" value="{{i.name.id}}" name="product_id_{{forloop.counter}}">
+    {% endfor %}
+    <input type="submit" class="btn btn-primary" value="Place Order" >
+  </form>
+</div>
+{% endblock body %}

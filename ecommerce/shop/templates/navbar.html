@@ -1,0 +1,54 @@
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    {% if request.user.is_authenticated %}
+    <a class="navbar-brand" href="/">{{request.user}}</a>
+    {% else %}
+    <a class="navbar-brand" href="/">Guest</a>
+
+    {% endif %}
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+
+          <a class="nav-link active" aria-current="page" href="#">{% if 'auth.seller' in perms %} Transaction Detail {% else %} Register as a Seller  {% endif %}</a>
+        </li>
+        <li class="nav-item">
+          {% if request.user.is_authenticated %}
+            <a class="nav-link" href="/accounts/logout/">Logout</a>
+          {% else %}
+            <a class="nav-link" href="/accounts/login/">Login</a>
+            <li class="nav-item">
+          <a class="nav-link" href="/register_as/">Register</a>
+      </li>
+          {% endif %}
+      {% if 'auth.buyer' in perms %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'add_to_cart' %}">Cart</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'show_order' %}">My Orders</a>
+        </li>
+        {% endif %}
+
+      </ul>
+      <form class="d-flex" action="{% url 'search_result' %}">
+        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" id="Search_bar" onkeyup="handleAutocomplete()" list="autocomplete_elements" name="q">
+            <datalist id="autocomplete_elements">
+              <span id="autocomplete_category">
+              </span>
+              <span  id="autocomplete_product">
+
+              </span>
+            </datalist>
+
+
+        <button class="btn btn-outline-success" type="submit">Search</button>
+      </form>
+    </div>
+  </div>
+</nav>

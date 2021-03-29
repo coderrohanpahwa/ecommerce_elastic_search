@@ -1,0 +1,40 @@
+PUT /ecommerce_subcategory_level2
+{
+  "mappings":{
+    "properties": {
+      "subcategory_level2":{
+        "type":"text"
+      },
+      "category":{
+        "type":"nested",
+        "properties": {
+          "category":{
+            "type":"text"
+          }
+        }
+      },
+      "subcategory":{
+        "type":"nested",
+        "properties": {
+          "subcategory":{
+            "type":"nested",
+            "properties":{
+              "subcategory":{
+                "type":"text"
+              },
+              "category":{
+                "type":"nested",
+                "properties":{
+                  "category":{
+                    "type":"text"
+                  }
+                }
+              }
+            }
+
+          }
+        }
+      }
+    }
+  }
+}

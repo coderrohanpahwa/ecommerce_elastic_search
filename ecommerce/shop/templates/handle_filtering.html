@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block title %}
+    Handle Filtering
+{% endblock title %}
+{% block body %}
+<div class="row">
+    <div class="col-8">
+        <h1 align="center">Your Search Result </h1>
+
+  <table class="table table-dark">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Name Of Mobile</th>
+      <th scope="col">Price(In Rs.)</th>
+      <th scope="col" style="text-align:center;">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+
+    <tr>
+      <th scope="row">{{forloop.counter}}</th>
+      <td>{{k.name}}</td>
+      <td>{{k.price}}</td>
+      <td style="text-align:center;"><a href="/product_info/{{k.category}}/{{k.id}}">See More</a><form method="POST" class="my-2" action="/complete_your_payment/">{% csrf_token %} <input type="hidden" value="{{k.id}}" name="product_id"> <input type="hidden" name="quantity" value="1"> <input type="Submit" value="Buy Now" class="btn btn-primary btn-sm mx-2" ></form></td>
+
+    </tr>
+
+  </tbody>
+</table>
+    </div>
+
+
+
+    <div class="col">
+          <form method="POST" action="{% url 'handle_filtering' %}">
+    {% csrf_token %}
+  <table class="table">
+  <thead>
+    <tr>
+      <th scope="col" colspan="2" style="text-align:center;">Filtering</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Price</td>
+      <td style="text-align:center;"><input type="number" style="width:75px;" class="mx-1" name="min_price"><input type="number" style="width:75px;" name="max_price"></td>
+    </tr>
+    {% if category %}
+    {% for i in category %}
+    <tr>
+      <td>{{i}}</td>
+      <td style="text-align:center;"><input type="checkbox" name="category_{{i}}" value="1"  ></td>
+    </tr>
+  {% endfor %}
+  {% endif %}
+  <tr>
+    <td>Discount</td>
+    <td><input type="range" class="form-range" min="0" max="100" name="discount_range" id="discount_slider" onchange="handleSliderValue()"><span style="margin-left:66px;" id="discount_slider_value"></span></td>
+
+  </tr>
+  </tbody>
+</table>
+    <input type="submit" value="Filter" class="btn btn-primary btn-sm">
+      </form>
+
+    </div>
+</div>
+{% endblock body %}
+{% block javascript %}
+    <script>
+        function handleSliderValue(){
+            var text = document.getElementById("discount_slider").value;
+            document.getElementById("discount_slider_value").innerHTML=` ${text} %`;
+        }
+    </script>
+
+{% endblock javascript %}

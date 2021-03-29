@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %} Purchase {% endblock title %}
+{% block body %}
+    <div class="container" >{% if messages %}
+        {% for i in messages %}
+<h4>{{i}}</h4>
+    {% endfor %}
+        {% endif %}
+    </div>
+{% endblock body %}

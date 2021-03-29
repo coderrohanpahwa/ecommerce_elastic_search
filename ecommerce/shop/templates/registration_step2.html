@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %} Registration Step 2 {% endblock title %}
+{% block body %}
+    <div class="container">
+      <form method="POST">
+        {% csrf_token %}
+          <div class="form-group">
+    <label for="phone" class="text-info">Phone :</label>
+    <input type="text" class="form-control" id="phone" name="phone" aria-describedby="emailHelp" placeholder="Phone">
+  </div>
+      <div class="form-group">
+          <label for="location" class="text-info">Location :</label>
+          <input type="text" id="location" name="location" class="form-control">
+      </div>
+          <div class="form-group">
+              <label for="email" class="text-info">Email :</label>
+              <input type="text" id="email" name="email" class="form-control">
+          </div>
+          {% if perms.auth.seller %}
+            <div class="form-group">
+                <label for="product_category" class="text-info">Product Category :</label>
+                <input type="text" class="form-control" id="product_category" name="product_category">
+            </div>
+          {% endif %}
+          <input type="submit" value="Submit" class="btn btn-primary mt-2">
+
+      </form>
+    </div>
+{% endblock body %}

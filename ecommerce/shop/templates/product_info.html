@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %} {{product.name}} || Description {% endblock title %}
+{% block body %}
+<div class="container">
+    <table class="table">
+  <thead>
+    <tr>
+
+      <th scope="col">Product Name</th>
+      <th scope="col">{{product.name}}</th>
+
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+
+      <th scope="col">Category</th>
+      <th scope="col">{{product.category}}</th>
+    </tr>
+        {% if product.subcategory %}
+    <tr>
+    <th scope="col">Subcategory</th>
+            <th scope="col">{{product.subcategory}}</th>
+    </tr>
+        {% endif %}
+        {% if product.subcategory_level2 %}
+    <tr>
+            <th scope="col">Subcategory Level2</th>
+            <th scope="col">{{product.subcategory_level2}}</th>
+    </tr>
+        {% endif %}
+    <tr>
+    <th scope="col">Price</th>
+        <th scope="col">Rs. {{product.price}}</th>
+    </tr>
+    <tr>
+        <th scope="col">Discount</th>
+        <th scope="col">{{product.discount}} %</th>
+    </tr>
+    <tr>
+    <th scope="col">Description</th>
+        <th scope="col">{{product.description}}</th>
+    </tr>
+
+    <tr>
+        <th scope="col">Company</th>
+        <th scope="col">{{product.company}}</th>
+    </tr>
+<tr>
+    <th scope="col">
+        Stock Available
+    </th>
+    <th scope="col">
+        {{stock}}
+    </th>
+</tr>
+
+  </tbody>
+</table>
+    <form method="POST" action="{% url 'add_to_cart' %}">
+        {% csrf_token %}
+        <label for="quantity">Quantity : </label>
+        <input type="number" id="quantity" name="quantity" min="0" max = {{stock}}>
+        <input type="hidden" name="product_id" value="{{product.id}}">
+        <input type="Submit" value="Add to Cart">
+    </form>
+    </div>
+{% endblock body%}

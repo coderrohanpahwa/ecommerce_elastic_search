@@ -1,0 +1,13 @@
+PUT /ecommerce_company
+{
+  "mappings":{
+    "properties": {
+      "company":{
+        "type":"text"
+      },
+      "quality_type":{
+        "type":"text"
+      }
+    }
+  }
+}

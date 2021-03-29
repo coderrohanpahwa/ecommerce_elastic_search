@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block body %}
+<h1 class="mx-4">Add Product You want to sell:</h1>
+<div class="container">
+<form method="POST" >
+    {% csrf_token %}
+
+  <div class="form-group">
+    <label for="name_of_product" class="text-info">Name of Product :</label>
+    <input type="text" class="form-control" id="name_of_product" name="name_of_product" aria-describedby="emailHelp" placeholder="Enter Name">
+  </div>
+  <div class="form-group">
+    <label for="category" class="text-info">Category :</label>
+    <input type="text" class="form-control" id="category" name="category" placeholder="Category">
+  </div>
+   <div class="form-group">
+    <label for="subcategory" class="text-info">Subcategory :</label>
+    <input type="text" class="form-control" id="subcategory" name="subcategory" placeholder="Subcategory">
+  </div>
+    <div class="form-group">
+    <label for="subcategory_level2" class="text-info">Subcategory Level2 :</label>
+    <input type="text" class="form-control" id="subcategory_level2" name="subcategory_level2" placeholder="Subcategory Level2">
+  </div>
+       <div class="form-group">
+    <label for="price" class="text-info">Price :</label>
+    <input type="text" class="form-control" id="price" name="price" placeholder="Price">
+  </div>
+        <div class="form-group">
+    <label for="discount" class="text-info">Discount :</label>
+    <input type="text" class="form-control" id="discount" name="discount" placeholder="Discount">
+
+  </div>
+        <div class="form-group">
+    <label for="description" class="text-info">Description : </label>
+            <textarea type="text" class="form-control" id="description" name="description" placeholder="Desciprion"></textarea>
+  </div>
+    <div class="form-group">
+        <label for="company" class="text-info">Company : </label>
+        <input type="text" class="form-control" id="company" name="company" placeholder="Company">
+    </div>
+
+  <button type="submit" class="btn btn-primary mt-4">Submit</button>
+
+</form>
+    </div>
+{% endblock body %}

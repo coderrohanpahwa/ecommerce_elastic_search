@@ -1,0 +1,16 @@
+
+PUT /ecommerce_category/
+{
+  "mappings": {
+    "properties": {
+      "category":{
+        "type":"text",
+        "fields":{
+          "keyword":{
+            "type":"keyword"
+          }
+        }
+      }
+    }
+  }
+}
