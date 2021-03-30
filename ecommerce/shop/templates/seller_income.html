@@ -1,5 +1,55 @@
 {% extends 'base.html' %}
 {% block title %} Income || {{request.user}}{% endblock title %}
 {% block body %}
-    Hey you got all your income here.
+    <h1 align="center">Delivered Product </h1>
+        <div class="container">
+          {% if delivered_orders %}
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Name of Product</th>
+      <th scope="col">Price</th>
+      <th scope="col">Payment Method</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for i in delivered_orders %}
+    <tr>
+      <th scope="row">{{forloop.counter}}</th>
+      <td>{{i.product.name}}</td>
+      <td>{{i.product.price}}</td>
+      <td>{{i.payment_method}}</td>
+    </tr>
+{% endfor %}
+  </tbody>
+</table>
+          {% endif %}
+
+          {% if undelivered_orders %}
+            <h1 align="center">Product on the way</h1>
+
+     <table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Name of Product</th>
+      <th scope="col">Price</th>
+      <th scope="col">Payment Method</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for i in undelivered_orders %}
+    <tr>
+      <th scope="row">{{forloop.counter}}</th>
+      <td>{{i.product.name}}</td>
+      <td>{{i.product.price}}</td>
+      <td>{{i.payment_method}}</td>
+    </tr>
+{% endfor %}
+  </tbody>
+</table>
+          {% endif %}
+
+        </div>
 {% endblock body %}

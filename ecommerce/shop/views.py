@@ -9,7 +9,7 @@ from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from elasticsearch import Elasticsearch
 from elasticsearch_dsl import Search,Q
-
+from django.db.models import Sum
 def check_if_buyer_or_seller(func):
     def inner(request):
         try :
@@ -206,9 +206,13 @@ def update_product(request):
     return HttpResponseRedirect(reverse("add_to_cart"))
 
 def seller_income(request):
-    orders=Orders.objects.filter(seller__email=request.user.email)
-    print(orders[0].product.price)
-    return render(request,'seller_income.html')
+    delivered_orders=Orders.objects.filter(seller__email=request.user.email,delivered="Yes")
+    undelivered_orders=Orders.objects.filter(seller__email=request.user.email).exclude(delivered="Yes")
+    print(delivered_orders)
+    print(undelivered_orders)
+    earning=delivered_orders.aggregate(Sum('product__price'))['product__price__sum']
+    print(earning)
+    return render(request,'seller_income.html',{'delivered_orders':delivered_orders,'undelivered_orders':undelivered_orders,'earning':earning})
 def handle_filtering(request):
     print(request.POST)
     clicked_items = []
