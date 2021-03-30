@@ -114,6 +114,7 @@ class Orders(models.Model):
     buyer=models.ForeignKey(Buyer,on_delete=models.CASCADE,blank=True,null=True)
     product=models.ForeignKey(Product,on_delete=models.CASCADE,blank=True,null=True)
     payment_method=models.CharField(max_length=50)
+    seller=models.ForeignKey(Seller,on_delete=models.CASCADE,null=True,blank=True)
     shipment=models.ForeignKey(Shipment,on_delete=models.CASCADE,blank=True,null=True)
     delivered=models.CharField(max_length=10,choices=(("Yes","yes"),("No","no")),null=True,blank=True)
     def __str__(self):

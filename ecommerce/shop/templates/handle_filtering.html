@@ -44,19 +44,19 @@
   <tbody>
     <tr>
       <td>Price</td>
-      <td style="text-align:center;"><input type="number" style="width:75px;" class="mx-1" name="min_price" placeholder="min"><input type="number" style="width:75px;" name="max_price" placeholder="max"></td>
+      <td style="text-align:center;"><input type="number" style="width:75px;" class="mx-1" name="min_price" placeholder="min" value="{{min_price}}"><input type="number" style="width:75px;" name="max_price" placeholder="max" value="{{max_price}}"></td>
     </tr>
     {% if category %}
     {% for i in category %}
     <tr>
       <td>{{i}}</td>
-      <td style="text-align:center;"><input type="checkbox" name="category_{{i}}" value="1"  ></td>
+      <td style="text-align:center;"><input type="checkbox" name="category_{{i}}" value="1" id="category_{{i}}"></td>
     </tr>
   {% endfor %}
   {% endif %}
   <tr>
     <td>Discount</td>
-    <td><input type="range" class="form-range" min="0" max="100" name="discount_range" id="discount_slider" onchange="handleSliderValue()"><span style="margin-left:66px;" id="discount_slider_value"></span></td>
+    <td><input type="range" class="form-range" min="0" max="100" name="discount_range" id="discount_slider" onchange="handleSliderValue()" value="0"><span style="margin-left:66px;" id="discount_slider_value"></span></td>
 
   </tr>
   </tbody>
@@ -66,12 +66,25 @@
 
     </div>
 </div>
+{{discount}}
 {% endblock body %}
 {% block javascript %}
     <script>
+        var discount={{discount}};
+        if (discount){
+            document.getElementById("discount_slider_value").innerHTML=`${discount} %`;
+        }
         function handleSliderValue(){
             var text = document.getElementById("discount_slider").value;
             document.getElementById("discount_slider_value").innerHTML=` ${text} %`;
+        }
+    </script>
+    <script>
+
+        var clicked_array={{clicked_items|safe}};
+        for (var i=0;i<clicked_array.length;i++){
+            document.getElementById(`${clicked_array[i]}`).setAttribute("checked","true");
+            console.log(document.getElementById(`${clicked_array[i]}`));
         }
     </script>
 

@@ -37,6 +37,11 @@
         </li>
         {% endif %}
 
+    {% if 'auth.seller' in perms %}
+          <li class="nav-item">
+              <a class="nav-link" href="{% url 'seller_index' %}">Add Product</a>
+          </li>
+          {% endif %}
       </ul>
       <form class="d-flex" action="{% url 'search_result' %}">
         <input autocomplete="off" class="form-control me-2" type="search" placeholder="Search" aria-label="Search" id="Search_bar" onkeyup="handleAutocomplete()" list="autocomplete_elements" name="q">

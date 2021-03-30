@@ -18,7 +18,7 @@ def check_if_buyer_or_seller(func):
             else :
                 return HttpResponseRedirect(reverse("registration_step2"))
             if 'auth.seller' in request.user.get_all_permissions():
-                return HttpResponseRedirect(reverse("seller_index"))
+                return HttpResponseRedirect(reverse("seller_income"))
         except :
             pass
         return func(request)
@@ -42,9 +42,9 @@ def index(request):
 def seller_index(request):
     if request.method=="POST":
         # print(request.POST)
-        if Product.objects.filter(name=request.POST['name_of_product']):
+        if Product.objects.filter(name=request.POST['name_of_product'],seller=Seller.objects.get(email=request.user.email)):
 
-            k=Availability.objects.get(product=Product.objects.get(name=request.POST['name_of_product']))
+            k=Availability.objects.get(product__name=Product.objects.filter(name=request.POST['name_of_product'])[0].name)
             k.stock+=1
             k.save()
         elif request.POST['name_of_product'] and request.POST['category'] and request.POST['price']:
@@ -117,7 +117,7 @@ def add_to_cart(request):
                 prod_add=AddToCart(name=prod,seller=prod.seller,buyer=Buyer.objects.get(email=request.user.email),quantity=int(request.POST['quantity']))
                 prod_add.save()
             print(request.user.email)
-    all_prod=AddToCart.objects.filter(buyer=Buyer.objects.get(email="buyer_again@gmail.com").id)
+    all_prod=AddToCart.objects.filter(buyer=Buyer.objects.get(email=request.user.email).id)
     print(all_prod)
     return render(request,'add_to_cart.html',{'all_prod':all_prod})
 def register_as(request):
@@ -223,10 +223,14 @@ def handle_filtering(request):
         if key[:9]=="category_":
             print(key[9:])
             s=s.query("nested",path="category",query=Q("match",category__category=f"{key[9:]}"))
-    if request.POST.get('max_price',"") and request.POST.get("min_price"):
+    max_price=request.POST.get('max_price',"")
+    min_price=request.POST.get('min_price',"")
+    discount=request.POST.get("discount_range",0)
+    if max_price and min_price:
         s=s.query("range",price={'lte':int(request.POST.get("max_price")) ,'gte':int(request.POST.get("min_price"))})
-    if request.POST.get("discount_range",""):
+    if discount:
         s=s.query("range",discount={'lte':int(request.POST.get("discount_range"))})
+
     res=s.execute()
     category=Category.objects.all()
     prod_li=[]
@@ -238,5 +242,6 @@ def handle_filtering(request):
         min_list.append(res['hits']['hits'][i]['_id'])
         min_list.append(res['hits']['hits'][i]['_source']['category']['category'])
         prod_li.append(min_list)
-    print(prod_li)
-    return render(request,'handle_filtering.html',{"category":category,"clicked_items":clicked_items,"all_prod":prod_li})
+    print("--------->",clicked_items)
+    print(discount)
+    return render(request,'handle_filtering.html',{"category":category,"clicked_items":clicked_items,"all_prod":prod_li,'max_price':max_price,"min_price":min_price,'discount':discount})
