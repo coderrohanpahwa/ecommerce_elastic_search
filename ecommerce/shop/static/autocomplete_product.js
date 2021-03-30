@@ -1,3 +1,4 @@
+var fuzzy_text=""
 function handleAutocomplete_product(){
     var text = document.getElementById("Search_bar").value;
 if (!text){
@@ -8,7 +9,10 @@ const query={
     "query":{
     "prefix":{
         "name.keyword":text
-    }}}
+    }},
+    "collapse":{
+    "field":"name.keyword"}
+    }
 axios.get('http://127.0.0.1:9200/ecommerce_products_using_python/_search',{params:{source:JSON.stringify(query),source_content_type:"application/json"}}).then((res)=>{
 //    console.log(res['data']['hits']['total']['value']);
     if (res['data']['hits']['total']['value']==0){
@@ -20,7 +24,9 @@ axios.get('http://127.0.0.1:9200/ecommerce_products_using_python/_search',{param
         "query":{
         "prefix":{
         "name.keyword":text
-        }}}
+        }},
+    "collapse":{
+    "field":"name.keyword"}}
     axios.get('http://127.0.0.1:9200/ecommerce_products_using_python/_search',{params:{source:JSON.stringify(query),source_content_type:"application/json"}}).then((inner_res)=>{
         if (inner_res['data']['hits']['total']['value']==0){
 
@@ -38,7 +44,9 @@ axios.get('http://127.0.0.1:9200/ecommerce_products_using_python/_search',{param
          "order": "desc"
        }
      }
-   ]
+   ],
+   "collapse":{
+   "field":"name.keyword"}
             }
             console.log("Invoked");
     axios.get('http://127.0.0.1:9200/ecommerce_products_using_python/_search',{params:{source:JSON.stringify(fuzzy_query),source_content_type:"application/json"}}).then((response)=>{
@@ -47,12 +55,13 @@ axios.get('http://127.0.0.1:9200/ecommerce_products_using_python/_search',{param
 //            console.log("No Result found through fuzzy query");
         }
         else {
-        console.log("------->",response['data']['hits']['hits']);
+        console.log("------->issi",response['data']['hits']['hits']);
         var res_length=response['data']['hits']['hits'].length
         document.getElementById("autocomplete_product").innerHTML=""
         for (var i=0;i<res_length;i++){
             console.log("Invokded");
-            document.getElementById("autocomplete_product").innerHTML +=`<option>${response['data']['hits']['hits'][i]['_source']['category']}</option>`
+            document.getElementById("autocomplete_product").innerHTML +=`<option>${response['data']['hits']['hits'][i]['_source']['name']}</option>`
+            fuzzy_text=response['data']['hits']['hits'][i]['_source']['name'];
         }
 }
     })
@@ -85,3 +94,9 @@ axios.get('http://127.0.0.1:9200/ecommerce_products_using_python/_search',{param
     }
 
 })}
+
+function handleFuzzy(){
+    if (fuzzy_text !=""){
+        document.getElementById("Search_bar").value=fuzzy_text;
+    }
+}

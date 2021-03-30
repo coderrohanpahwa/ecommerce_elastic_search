@@ -94,6 +94,7 @@ def search_result(request):
     except:
         c=request.GET['q']
     print(c)
+    print(product)
     category=Category.objects.get(category=c)
     all_prod=Product.objects.filter(category=category.id)
     if product and category:
