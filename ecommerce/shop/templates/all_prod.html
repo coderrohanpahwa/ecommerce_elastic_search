@@ -34,7 +34,7 @@
   {% endfor %}
 
 
-
+{% if empty_products %}
   <h1 align="center">Available Soon Products/Out of Stock : </h1>
 <table class="table table-dark">
   <thead>
@@ -54,7 +54,7 @@
 {% endfor %}
   </tbody>
 </table>
-
+{% endif %}
 
 </div>
 <div class="col">
@@ -81,7 +81,7 @@
   {% endif %}
   <tr>
     <td>Discount</td>
-    <td><input type="range" class="form-range" min="0" max="100" name="discount_range"></td>
+    <td><input type="range" class="form-range" min="0" max="100" name="discount_range" id="discount_range" onchange="discount()"><span id="discount"></span></td>
   </tr>
   </tbody>
 </table>
@@ -92,3 +92,12 @@
   </div>
 
    {% endblock body %}
+{% block javascript %}
+<script>
+  function discount(){
+  var text=document.getElementById("discount_range").value;
+    document.getElementById("discount").innerHTML=`${text} %`;
+  }
+
+</script>
+{% endblock javascript %}

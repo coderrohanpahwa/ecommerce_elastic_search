@@ -38,7 +38,6 @@ def index(request):
             if k.product.category==i:
                 products =products.exclude(name=k.product.name)
         dict[f'{i}']=list(products)
-
     return render(request,'all_prod.html',{'category':category,"object_dict":dict,"empty_products":empty_products})
 def seller_index(request):
     if request.method=="POST":
@@ -50,23 +49,23 @@ def seller_index(request):
             k.save()
         elif request.POST['name_of_product'] and request.POST['category'] and request.POST['price']:
 
-            if request.POST['company'] in Company.objects.all():
-                company=request.POST['company']
+            if Company.objects.filter(company=request.POST['company']):
+                company=Company.objects.get(company=request.POST['company'])
             else :
                 company=Company(company=request.POST['company'])
                 company.save()
-            if request.POST['category'] in Category.objects.all():
-                category=request.POST['category']
+            if Category.objects.filter(category=request.POST['category']):
+                category=Category.objects.get(category=request.POST['category'])
             else :
                 category=Category(category=request.POST['category'])
                 category.save()
-            if request.POST['subcategory'] in Subcategory.objects.all():
-                subcategory=request.POST['subcategory']
+            if Subcategory.objects.filter(subcategory=request.POST['subcategory'],category=category):
+                subcategory=Subcategory.objects.get(subcategory=request.POST['subcategory'],category=category)
             else :
                 subcategory=Subcategory(subcategory=request.POST['subcategory'],category=category)
                 subcategory.save()
-            if request.POST['subcategory_level2'] in SubcategoryLevel2.objects.all():
-                subcategory_level2=request.POST['subcategory_level2']
+            if SubcategoryLevel2.objects.filter(subcategoryLevel2=request.POST['subcategory_level2']) and request.POST['subcategory_level2']:
+                subcategory_level2=SubcategoryLevel2(subcategoryLevel2=request.POST['subcategory_level2'],subcategory=request.POST['subcategory_level2'],category=category)
             else:
                 subcategory_level2=SubcategoryLevel2(subcategoryLevel2=request.POST['subcategory_level2'],category=category,subcategory=subcategory)
                 subcategory_level2.save()
@@ -137,16 +136,14 @@ def register_as(request):
     return render(request,'register_as.html')
 def registration_step2(request):
     if request.method=="POST":
-        if request.session.get('role')== "buyer":
-            buyer=Group.objects.get(name="buyer")
-            buyer.user_set.add(request.user)
-            b=Buyer(name=request.user,email=request.user.email,phone=request.POST['phone'],location=Location.objects.get(id=1)).save()
-            print("Invoked")
+        print("Invoked im POST method")
+        print(request)
+        if request.session['role']== "buyer":
+            b = Buyer(name=request.user, email=request.user.email, phone=request.POST['phone'],
+                      location=Location.objects.get(id=1)).save()
             return HttpResponseRedirect(reverse("index"))
         elif request.session['role'] == "seller":
-            seller=Group.objects.get(name="seller")
-            seller.user_set.add(request.user)
-            if request.POST['product_category'] in Category.objects.all():
+            if Category.objects.filter(category=request.POST['product_category']):
                 category=Category.objects.get(category=request.POST['product_category'])
             else :
                 category=Category(category=request.POST['product_category'])
@@ -154,6 +151,16 @@ def registration_step2(request):
 
             Seller(name=request.user,email=request.user.email,location=Location.objects.get(id=1),product_category=category).save()
             return HttpResponseRedirect(reverse("seller_index"))
+    if request.method=="GET":
+        print("Invoked in get MEthod")
+        if request.session.get("role",0)=="buyer":
+            buyer = Group.objects.get(name="buyer")
+            buyer.user_set.add(request.user)
+            print("Invoked in buyer method")
+        elif request.session.get("role",0)=="seller":
+            print("Invoked for seller registration step2")
+            seller = Group.objects.get(name="seller")
+            seller.user_set.add(request.user)
     return render(request,'registration_step2.html')
 def complete_your_payment(request):
     if request.method=="POST":
@@ -208,18 +215,28 @@ def handle_filtering(request):
                     clicked_items.append(i)
     print(clicked_items)
     client=Elasticsearch()
-    # s=Search().using(client).index('ecommerce_products').query("nested",path="category",query=Q("match",category__category="Mobile")).query("range",discount={'lte':10}) #nested query with discount
-    s=Search().using(client).index('ecommerce_products')
+    # s=Search().using(client).index('ecommerce_products_using_python').query("nested",path="category",query=Q("match",category__category="Mobile")).query("range",discount={'lte':1}).query("range",discount={'gte':0}) #nested query with discount
+    s=Search().using(client).index('ecommerce_products_using_python')
     for i,key in enumerate(request.POST):
         if i==0:
             continue
         if key[:9]=="category_":
             print(key[9:])
             s=s.query("nested",path="category",query=Q("match",category__category=f"{key[9:]}"))
+    if request.POST.get('max_price',"") and request.POST.get("min_price"):
+        s=s.query("range",price={'lte':int(request.POST.get("max_price")) ,'gte':int(request.POST.get("min_price"))})
+    if request.POST.get("discount_range",""):
+        s=s.query("range",discount={'lte':int(request.POST.get("discount_range"))})
     res=s.execute()
     category=Category.objects.all()
+    prod_li=[]
+    print(res)
     for i in range(len(res['hits']['hits'])):
-        print(res['hits']['hits'][i]['_source']['name'])
-        print(res['hits']['hits'][i]['_source']['price'])
-        print(res['hits']['hits'][i]['_source']['price'])
-    return render(request,'handle_filtering.html',{"category":category,"clicked_items":clicked_items})
+        min_list=[]
+        min_list.append(res['hits']['hits'][i]['_source']['name'])
+        min_list.append(res['hits']['hits'][i]['_source']['price'])
+        min_list.append(res['hits']['hits'][i]['_id'])
+        min_list.append(res['hits']['hits'][i]['_source']['category']['category'])
+        prod_li.append(min_list)
+    print(prod_li)
+    return render(request,'handle_filtering.html',{"category":category,"clicked_items":clicked_items,"all_prod":prod_li})

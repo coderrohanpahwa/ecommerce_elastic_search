@@ -16,7 +16,8 @@
               <label for="email" class="text-info">Email :</label>
               <input type="text" id="email" name="email" class="form-control">
           </div>
-          {% if perms.auth.seller %}
+
+          {% if 'auth.seller' in perms %}
             <div class="form-group">
                 <label for="product_category" class="text-info">Product Category :</label>
                 <input type="text" class="form-control" id="product_category" name="product_category">

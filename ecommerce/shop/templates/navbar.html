@@ -13,10 +13,12 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+     {% if 'auth.buyer' in perms %}
         <li class="nav-item">
 
           <a class="nav-link active" aria-current="page" href="#">{% if 'auth.seller' in perms %} Transaction Detail {% else %} Register as a Seller  {% endif %}</a>
         </li>
+        {% endif %}
         <li class="nav-item">
           {% if request.user.is_authenticated %}
             <a class="nav-link" href="/accounts/logout/">Logout</a>
@@ -37,7 +39,7 @@
 
       </ul>
       <form class="d-flex" action="{% url 'search_result' %}">
-        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" id="Search_bar" onkeyup="handleAutocomplete()" list="autocomplete_elements" name="q">
+        <input autocomplete="off" class="form-control me-2" type="search" placeholder="Search" aria-label="Search" id="Search_bar" onkeyup="handleAutocomplete()" list="autocomplete_elements" name="q">
             <datalist id="autocomplete_elements">
               <span id="autocomplete_category">
               </span>

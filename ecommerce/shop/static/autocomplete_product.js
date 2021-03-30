@@ -9,7 +9,7 @@ const query={
     "prefix":{
         "name.keyword":text
     }}}
-axios.get('http://127.0.0.1:9200/ecommerce_products/_search',{params:{source:JSON.stringify(query),source_content_type:"application/json"}}).then((res)=>{
+axios.get('http://127.0.0.1:9200/ecommerce_products_using_python/_search',{params:{source:JSON.stringify(query),source_content_type:"application/json"}}).then((res)=>{
 //    console.log(res['data']['hits']['total']['value']);
     if (res['data']['hits']['total']['value']==0){
 //        console.log("No Result Found for entered input ");
@@ -21,14 +21,16 @@ axios.get('http://127.0.0.1:9200/ecommerce_products/_search',{params:{source:JSO
         "prefix":{
         "name.keyword":text
         }}}
-    axios.get('http://127.0.0.1:9200/ecommerce_products/_search',{params:{source:JSON.stringify(query),source_content_type:"application/json"}}).then((inner_res)=>{
-        console.log("Checking with first capital letter");
+    axios.get('http://127.0.0.1:9200/ecommerce_products_using_python/_search',{params:{source:JSON.stringify(query),source_content_type:"application/json"}}).then((inner_res)=>{
         if (inner_res['data']['hits']['total']['value']==0){
 
             const fuzzy_query={
                 "query":{
-                "fuzzy":{
-                "name":text
+                "match":{
+                "name":{
+                    "query":text,
+                    "fuzziness":"auto"
+                }
                 }},
                 "sort": [
      {
@@ -39,7 +41,8 @@ axios.get('http://127.0.0.1:9200/ecommerce_products/_search',{params:{source:JSO
    ]
             }
             console.log("Invoked");
-    axios.get('http://127.0.0.1:9200/ecommerce_products/_search',{params:{source:JSON.stringify(fuzzy_query),source_content_type:"application/json"}}).then((response)=>{
+    axios.get('http://127.0.0.1:9200/ecommerce_products_using_python/_search',{params:{source:JSON.stringify(fuzzy_query),source_content_type:"application/json"}}).then((response)=>{
+        console.log(response['data']['hits'])
         if (response['data']['hits']['total']['value']==0){
 //            console.log("No Result found through fuzzy query");
         }
@@ -68,6 +71,17 @@ axios.get('http://127.0.0.1:9200/ecommerce_products/_search',{params:{source:JSO
     }
             }
     })
+    }
+    else
+    {
+    console.log(res['data']['hits']['total']['value']);
+        var res_length=res['data']['hits']['hits'].length;
+        for (var i=0;i<res_length;i++){
+
+        document.getElementById("autocomplete_product").innerHTML+=`<option>${res['data']['hits']['hits'][i]['_source']['name']}</option>`
+
+        }
+
     }
 
 })}

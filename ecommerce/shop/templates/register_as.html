@@ -2,7 +2,7 @@
 {% block title %} Register As {% endblock title%}
 {% block body %}
     <div class="container" >
-    <form method="POST" >
+    <form method="POST">
         {% csrf_token %}
         <div class="form-group">
             <input type="checkbox" name="buyer" value="1" id="buyer"/>
