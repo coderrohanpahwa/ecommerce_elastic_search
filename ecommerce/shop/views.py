@@ -103,7 +103,7 @@ def search_result(request):
 def add_to_cart(request):
     if request.method=="POST":
         prod=Product.objects.get(id=request.POST['product_id'])
-        messages.success(request,f'You have successfully add product {Product.objects.get(id=prod.id)}')
+        # messages.success(request,f'You have successfully add product {Product.objects.get(id=prod.id)}')
         k=Availability.objects.get(product=prod)
         if k.stock-int(request.POST['quantity'])>=0:
             k.stock-=int(request.POST['quantity'])
@@ -173,9 +173,11 @@ def complete_your_payment(request):
     for i,key in enumerate(request.POST):
         if key[:11]=="product_id_":
             prod=Product.objects.get(id=request.POST[key])
-            k=AddToCart.objects.get(name=prod,buyer=Buyer.objects.get(email=request.user.email))
+            print(prod)
+            print(request.user.email)
+            k=AddToCart.objects.get(name=prod.id,buyer__email=request.user.email)
             k.delete()
-            order=Orders(product=prod,payment_method="Paytm",shipment=Shipment.objects.get(id=1))
+            order=Orders(buyer=Buyer.objects.get(name=request.user),product=prod,payment_method="Paytm",shipment=Shipment.objects.get(id=1),seller=prod.seller)
             order.save()
             messages.success(request,f"You have successfully completed your payment for {prod.name}")
     return render(request,'purchase.html')
@@ -204,6 +206,8 @@ def update_product(request):
     return HttpResponseRedirect(reverse("add_to_cart"))
 
 def seller_income(request):
+    orders=Orders.objects.filter(seller__email=request.user.email)
+    print(orders[0].product.price)
     return render(request,'seller_income.html')
 def handle_filtering(request):
     print(request.POST)

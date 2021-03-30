@@ -117,8 +117,8 @@ class Orders(models.Model):
     seller=models.ForeignKey(Seller,on_delete=models.CASCADE,null=True,blank=True)
     shipment=models.ForeignKey(Shipment,on_delete=models.CASCADE,blank=True,null=True)
     delivered=models.CharField(max_length=10,choices=(("Yes","yes"),("No","no")),null=True,blank=True)
-    def __str__(self):
-        return f'{self.product.name} || {self.buyer.name} || Delivered : {self.delivered}'
+    # def __str__(self):
+    #     return f'{self.product.name} || {self.buyer.name} || Delivered : {self.delivered}'
     class Meta:
         verbose_name_plural="Orders"
 
