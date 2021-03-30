@@ -20,6 +20,7 @@
       <td><form method="POST" action="{% url 'update_product' %}">{% csrf_token %}
         <input type="number" value="{{i.quantity}}" name="quantity" style="width:12%;" max="" min="0">
         <input type="hidden" value="{{i.name.id}}" name="product_id" >
+        <input type="hidden" value="{{i.seller.id}}" name="seller_id">
         <input type="submit" value="Update" class="btn btn-primary btn-sm">
       </form></td>
     </tr>

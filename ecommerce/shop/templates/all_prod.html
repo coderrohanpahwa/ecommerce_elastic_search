@@ -21,7 +21,7 @@
       <th scope="row">{{forloop.counter}}</th>
       <td>{{k.name}}</td>
       <td>{{k.price}}</td>
-      <td style="text-align:center;"><a href="/product_info/{{k.category}}/{{k.id}}">See More</a><form method="POST" class="my-2" action="/complete_your_payment/">{% csrf_token %} <input type="hidden" value="{{k.id}}" name="product_id"> <input type="hidden" name="quantity" value="1"> <input type="Submit" value="Buy Now" class="btn btn-primary btn-sm mx-2" ></form></td>
+      <td style="text-align:center;"><a href="{% url 'product_info' k.category k.id k.seller.id %}">See More</a><form method="POST" class="my-2" action="/complete_your_payment/">{% csrf_token %} <input type="hidden" value="{{k.id}}" name="product_id"> <input type="hidden" name="quantity" value="1"> <input type="Submit" value="Buy Now" class="btn btn-primary btn-sm mx-2" ></form></td>
 
     </tr>
 {% endfor %}

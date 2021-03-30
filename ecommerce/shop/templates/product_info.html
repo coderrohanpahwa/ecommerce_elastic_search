@@ -54,6 +54,15 @@
         {{stock}}
     </th>
 </tr>
+    <tr>
+    <th scope="col">
+        Seller Name
+    </th>
+    <th scope="col">
+        {{seller.name}}
+
+    </th>
+</tr>
 
   </tbody>
 </table>
@@ -62,6 +71,8 @@
         <label for="quantity">Quantity : </label>
         <input type="number" id="quantity" name="quantity" min="0" max = {{stock}}>
         <input type="hidden" name="product_id" value="{{product.id}}">
+        <input type="hidden" name="seller_id" value="{{seller.id}}">
+        <input type="hidden" name="stock_available" value="{{stock}}">
         <input type="Submit" value="Add to Cart">
     </form>
     </div>

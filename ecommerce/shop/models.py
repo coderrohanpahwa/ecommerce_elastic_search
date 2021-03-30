@@ -88,6 +88,7 @@ class Rating(models.Model):
     product=models.ForeignKey(Product,on_delete=models.CASCADE)
     rating=models.PositiveIntegerField(validators=[MaxValueValidator(5)])
 class Availability(models.Model):
+    seller=models.ForeignKey(Seller,on_delete=models.CASCADE,null=True,default=True)
     product=models.OneToOneField(Product,on_delete=models.CASCADE)
     stock=models.PositiveIntegerField()
     class Meta:
@@ -116,9 +117,9 @@ class Orders(models.Model):
     payment_method=models.CharField(max_length=50)
     seller=models.ForeignKey(Seller,on_delete=models.CASCADE,null=True,blank=True)
     shipment=models.ForeignKey(Shipment,on_delete=models.CASCADE,blank=True,null=True)
-    delivered=models.CharField(max_length=10,choices=(("Yes","yes"),("No","no")),null=True,blank=True)
-    # def __str__(self):
-    #     return f'{self.product.name} || {self.buyer.name} || Delivered : {self.delivered}'
+    delivered=models.CharField(max_length=10,choices=(("Yes","yes"),("No","no")),null=True,blank=True,default="No")
+    def __str__(self):
+        return f'{self.product.name} || {self.buyer} || Delivered : {self.delivered}'
     class Meta:
         verbose_name_plural="Orders"
 
@@ -126,3 +127,5 @@ class SellerIncome(models.Model):
     seller=models.ForeignKey(Seller,on_delete=models.CASCADE,blank=True,null=True)
     number_of_products_sold=models.IntegerField(null=True)
     turnover_gained=models.IntegerField(blank=True)
+
+

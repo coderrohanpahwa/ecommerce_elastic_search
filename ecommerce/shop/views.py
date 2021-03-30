@@ -43,8 +43,7 @@ def seller_index(request):
     if request.method=="POST":
         # print(request.POST)
         if Product.objects.filter(name=request.POST['name_of_product'],seller=Seller.objects.get(email=request.user.email)):
-
-            k=Availability.objects.get(product__name=Product.objects.filter(name=request.POST['name_of_product'])[0].name)
+            k=Availability.objects.get(product__name=Product.objects.filter(name=request.POST['name_of_product'])[0].name,seller=Seller.objects.get(email=request.user.email))
             k.stock+=1
             k.save()
         elif request.POST['name_of_product'] and request.POST['category'] and request.POST['price']:
@@ -73,42 +72,46 @@ def seller_index(request):
             prod=Product(name=request.POST['name_of_product'],category=category,subcategory=subcategory,subcategory_level2=subcategory_level2,price=request.POST['price'],seller=Seller.objects.get(name=request.user),discount=request.POST['discount'],description=request.POST['description'],company=company)
             print(prod.id)
             prod.save()
-            Availability(product=prod,stock=1).save()
+            Availability(product=prod,stock=1,seller=Seller.objects.get(email=request.user.email)).save()
         return HttpResponseRedirect("/")
     fm=ProductForm()
     return render(request,'seller_index.html',{'form':fm})
-def product_info(request,category,id):
+def product_info(request,category,id,seller_id):
     # Here are the views for product info
-    print(id,category)
+    print(id,category,seller_id)
     product=Product.objects.get(id=id)
     print(product)
-    stock=Availability.objects.get(product=product).stock
-    return render(request,'product_info.html',{'product':product,'stock':stock})
+    seller=Seller.objects.get(id=seller_id)
+    stock=Availability.objects.get(product=product,seller=seller).stock
+    return render(request,'product_info.html',{'product':product,'stock':stock,'seller':seller})
 def search_result(request):
     print(request.GET)
     all_prod={}
     product=""
     try:
-        product=Product.objects.get(name=request.GET['q'])
-        c=product.category
+        product=Product.objects.filter(name=request.GET['q'])
+        c=product[0].category
     except:
         c=request.GET['q']
+    print(c)
     category=Category.objects.get(category=c)
     all_prod=Product.objects.filter(category=category.id)
     if product and category:
-        all_prod = Product.objects.filter(category=category.id).exclude(name=product.name)
+        all_prod = Product.objects.filter(category=category.id)
 
-        return render(request,'search_result.html',{'product':product,'all_prod':all_prod})
+        return render(request,'search_result.html',{'product':product[0],'all_prod':all_prod})
     return render(request,'search_result.html',{'all_prod':all_prod})
 def add_to_cart(request):
     if request.method=="POST":
         prod=Product.objects.get(id=request.POST['product_id'])
         # messages.success(request,f'You have successfully add product {Product.objects.get(id=prod.id)}')
-        k=Availability.objects.get(product=prod)
+        k=Availability.objects.get(product=prod,seller__id=request.POST['seller_id'])
+        print(k)
+        print(k.stock-int(request.POST['quantity']))
         if k.stock-int(request.POST['quantity'])>=0:
+            print("Invoked")
             k.stock-=int(request.POST['quantity'])
             k.save()
-            # Kam krna hai abhi ispr
             try :
                 prod_present=AddToCart.objects.get(name=prod,buyer=Buyer.objects.get(email=request.user.email))
                 prod_present.quantity+=int(request.POST['quantity'])
@@ -175,7 +178,7 @@ def complete_your_payment(request):
             prod=Product.objects.get(id=request.POST[key])
             print(prod)
             print(request.user.email)
-            k=AddToCart.objects.get(name=prod.id,buyer__email=request.user.email)
+            k=AddToCart.objects.get(name=prod.id,buyer__email=request.user.email,seller=prod.seller.id)
             k.delete()
             order=Orders(buyer=Buyer.objects.get(name=request.user),product=prod,payment_method="Paytm",shipment=Shipment.objects.get(id=1),seller=prod.seller)
             order.save()
@@ -190,18 +193,21 @@ def show_order(request):
 # Kam Krna hai abhi ispe
 def update_product(request):
     if request.method=="POST":
-        print("-->",request.POST)
+        print(request.POST)
         s=AddToCart.objects.get(name=Product.objects.get(id=request.POST['product_id']))
-        s.quantity=int(request.POST['quantity'])
-        print(s.quantity)
-        k=Availability.objects.get(product=Product.objects.get(id=request.POST['product_id']))
-        if s.quantity<int(request.POST['quantity']):
-            k.stock=k.stock+int(request.POST['quantity'])-s.quantity
+        seller=Seller.objects.get(id=request.POST['seller_id'])
+        print(seller)
+        k=Availability.objects.get(product=Product.objects.get(id=request.POST['product_id']),seller=seller)
+        print(k.stock)
+        if s.quantity>int(request.POST['quantity']):
+            k.stock=k.stock-int(request.POST['quantity'])+s.quantity
             k.save()
-        elif s.quantity>int(request.POST['quantity']):
+        elif s.quantity<int(request.POST['quantity']):
             if k.stock-int(request.POST['quantity'])+s.quantity>0:
                 k.stock=k.stock-int(request.POST['quantity'])+s.quantity
             k.save()
+        print(s)
+        s.quantity=request.POST['quantity']
         s.save()
     return HttpResponseRedirect(reverse("add_to_cart"))
 
