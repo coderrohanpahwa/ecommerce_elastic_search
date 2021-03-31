@@ -20,6 +20,7 @@ def create_product_in_elastic_search(sender,instance,created,**kwargs):
         description=instance.description
         company_name=instance.company.company
         company_type=instance.company.quality_type
+        seller_id=instance.seller.id
         seller_username=instance.seller.name.username
         seller_phone=instance.seller.phone
         seller_location=instance.seller.location.address
@@ -28,7 +29,7 @@ def create_product_in_elastic_search(sender,instance,created,**kwargs):
         seller_country=instance.seller.location.country.country
         seller_email=instance.seller.email
         # I have to do work on query of location object
-        Product(_id=instance.id,name=name,category={'category':instance.category.category},subcategory={'category':{'category':category},'subcategory':subcategory},subcategoryLevel2={'category':{'category':category},'subcategory':{'subcategory':subcategory,category:{'category':category}}},price=price,seller={'name':{'username':seller_username,"email":seller_email},"phone":seller_phone},discount=discount,description=description,company={"company":company_name,"quality_type":company_type}).save(refresh=True)
+        Product(_id=instance.id,name=name,category={'category':instance.category.category},subcategory={'category':{'category':category},'subcategory':subcategory},subcategoryLevel2={'category':{'category':category},'subcategory':{'subcategory':subcategory,category:{'category':category}}},price=price,seller={'name':{'username':seller_username,"email":seller_email,"id":seller_id},"phone":seller_phone},discount=discount,description=description,company={"company":company_name,"quality_type":company_type}).save(refresh=True)
 
 @receiver(post_save,sender=category_model)
 def create_categories_in_elastic_search(sender,instance,created,**kwargs):

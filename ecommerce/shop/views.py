@@ -54,6 +54,7 @@ def seller_index(request):
                 company=Company(company=request.POST['company'])
                 company.save()
             if Category.objects.filter(category=request.POST['category']):
+                print(request.POST['category'])
                 category=Category.objects.get(category=request.POST['category'])
             else :
                 category=Category(category=request.POST['category'])
@@ -64,7 +65,9 @@ def seller_index(request):
                 subcategory=Subcategory(subcategory=request.POST['subcategory'],category=category)
                 subcategory.save()
             if SubcategoryLevel2.objects.filter(subcategoryLevel2=request.POST['subcategory_level2']) and request.POST['subcategory_level2']:
-                subcategory_level2=SubcategoryLevel2(subcategoryLevel2=request.POST['subcategory_level2'],subcategory=request.POST['subcategory_level2'],category=category)
+                print(category,subcategory)
+                subcategory_level2=SubcategoryLevel2.objects.get(subcategoryLevel2=request.POST['subcategory_level2'],subcategory=subcategory,category=category)
+
             else:
                 subcategory_level2=SubcategoryLevel2(subcategoryLevel2=request.POST['subcategory_level2'],category=category,subcategory=subcategory)
                 subcategory_level2.save()
@@ -175,6 +178,9 @@ def complete_your_payment(request):
             k = Availability.objects.get(product=prod)
             k.stock -= 1
             k.save()
+            order=Orders(buyer=Buyer.objects.get(name=request.user),product=prod,payment_method="Paytm",shipment=Shipment.objects.get(id=1),seller=prod.seller)
+            order.save()
+            messages.success(request,f"You have successfully completed your payment for {prod.name}")
     for i,key in enumerate(request.POST):
         if key[:11]=="product_id_":
             prod=Product.objects.get(id=request.POST[key])
@@ -260,7 +266,11 @@ def handle_filtering(request):
         min_list.append(res['hits']['hits'][i]['_source']['price'])
         min_list.append(res['hits']['hits'][i]['_id'])
         min_list.append(res['hits']['hits'][i]['_source']['category']['category'])
-        min_list.append(res['hits']['hits'][i]['_source']['seller']['name']['email'])
+        # Erase try catch block
+        try :
+            min_list.append(res['hits']['hits'][i]['_source']['seller']['name']['id'])
+        except:
+            pass
         prod_li.append(min_list)
     print("--------->",clicked_items)
     print(prod_li)
