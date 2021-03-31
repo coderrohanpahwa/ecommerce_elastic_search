@@ -103,12 +103,12 @@ def search_result(request):
         return render(request,'search_result.html',{'product':product[0],'all_prod':all_prod})
     return render(request,'search_result.html',{'all_prod':all_prod})
 def add_to_cart(request):
+
     if request.method=="POST":
         prod=Product.objects.get(id=request.POST['product_id'])
         # messages.success(request,f'You have successfully add product {Product.objects.get(id=prod.id)}')
         k=Availability.objects.get(product=prod,seller__id=request.POST['seller_id'])
-        print(k)
-        print(k.stock-int(request.POST['quantity']))
+        # print(k.stock-int(request.POST['quantity']))
         if k.stock-int(request.POST['quantity'])>=0:
             print("Invoked")
             k.stock-=int(request.POST['quantity'])
@@ -122,6 +122,7 @@ def add_to_cart(request):
                 prod_add.save()
             print(request.user.email)
     all_prod=AddToCart.objects.filter(buyer=Buyer.objects.get(email=request.user.email).id)
+
     print(all_prod)
     return render(request,'add_to_cart.html',{'all_prod':all_prod})
 def register_as(request):
@@ -199,7 +200,8 @@ def update_product(request):
         seller=Seller.objects.get(id=request.POST['seller_id'])
         print(seller)
         k=Availability.objects.get(product=Product.objects.get(id=request.POST['product_id']),seller=seller)
-        print(k.stock)
+        if k.stock<int(request.POST['quantity']):
+            raise Exception("Try with a lower quantity")
         if s.quantity>int(request.POST['quantity']):
             k.stock=k.stock-int(request.POST['quantity'])+s.quantity
             k.save()
@@ -209,7 +211,9 @@ def update_product(request):
             k.save()
         print(s)
         s.quantity=request.POST['quantity']
+
         s.save()
+
     return HttpResponseRedirect(reverse("add_to_cart"))
 
 def seller_income(request):
@@ -256,7 +260,8 @@ def handle_filtering(request):
         min_list.append(res['hits']['hits'][i]['_source']['price'])
         min_list.append(res['hits']['hits'][i]['_id'])
         min_list.append(res['hits']['hits'][i]['_source']['category']['category'])
+        min_list.append(res['hits']['hits'][i]['_source']['seller']['name']['email'])
         prod_li.append(min_list)
     print("--------->",clicked_items)
-    print(discount)
+    print(prod_li)
     return render(request,'handle_filtering.html',{"category":category,"clicked_items":clicked_items,"all_prod":prod_li,'max_price':max_price,"min_price":min_price,'discount':discount})

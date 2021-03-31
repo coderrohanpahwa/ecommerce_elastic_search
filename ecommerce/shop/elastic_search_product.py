@@ -28,6 +28,7 @@ class Location(InnerDoc):
     state=Nested(State)
     country=Nested(Country)
 class Seller(InnerDoc):
+    id=Long()
     name=Nested(User)
     phone=Long()
     Location=Nested()
